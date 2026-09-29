@@ -1,13 +1,13 @@
 const express = require('express');
-console.log("-> File course.routes.js BERHASIL dimuat!"); // Tambahkan ini
+console.log("-> File course.routes.js BERHASIL dimuat!");
 const router = express.Router();
 const courseController = require('../controllers/course.controller');
 
-// Daftarkan semua rute untuk courses di sini:
-router.get('/', courseController.getAllCourses);
-router.get('/:id', courseController.getCourseById);
-router.post('/', courseController.createCourse);     // <-- Pastikan baris ini ada untuk POST
-router.put('/:id', courseController.updateCourse);
-router.delete('/:id', courseController.deleteCourse);
+// Semua rute course kini bebas diakses publik (tanpa middleware authenticate)
+router.get('/', courseController.getAllCourses);  //mengambil semua data
+router.get('/:id', courseController.getCourseById); // mengambil data dg id
+router.post('/', courseController.createCourse); // menambah data baru   
+router.put('/:id', courseController.updateCourse); // mengubah data
+router.delete('/:id', courseController.deleteCourse); // menghapus data
 
 module.exports = router;

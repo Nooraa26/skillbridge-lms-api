@@ -1,6 +1,6 @@
 const courseRepository = require('../repositories/course.repository');
 
-class CourseController {
+const courseController = {
   // Menampilkan semua kursus
   async getAllCourses(req, res) {
     try {
@@ -14,7 +14,7 @@ class CourseController {
       console.error(error);
       res.status(500).json({ success: false, message: 'Gagal mengambil data courses' });
     }
-  }
+  },
 
   // Menampilkan detail kursus berdasarkan ID
   async getCourseById(req, res) {
@@ -38,14 +38,13 @@ class CourseController {
       console.error(error);
       res.status(500).json({ success: false, message: 'Gagal mengambil detail kursus' });
     }
-  }
+  },
 
   // Menambahkan data kursus
   async createCourse(req, res) {
     try {
       const { course_name, description, price, quota, category_id, instructor_id } = req.body;
 
-      // Validasi field wajib diisi
       if (!course_name || !description || !category_id) {
         return res.status(400).json({
           success: false,
@@ -71,7 +70,7 @@ class CourseController {
       console.error(error);
       res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
     }
-  }
+  },
 
   // Mengupdate data kursus
   async updateCourse(req, res) {
@@ -79,7 +78,6 @@ class CourseController {
       const { id } = req.params;
       const { course_name, description, price, quota, category_id, instructor_id } = req.body;
 
-      // Cek apakah kursus ada
       const existingCourse = await courseRepository.findById(id);
       if (!existingCourse) {
         return res.status(404).json({
@@ -113,14 +111,13 @@ class CourseController {
       console.error(error);
       res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
     }
-  }
+  },
 
   // Menghapus data kursus
   async deleteCourse(req, res) {
     try {
       const { id } = req.params;
 
-      // Cek apakah kursus ada
       const existingCourse = await courseRepository.findById(id);
       if (!existingCourse) {
         return res.status(404).json({
@@ -140,6 +137,6 @@ class CourseController {
       res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
     }
   }
-}
+};
 
-module.exports = new CourseController();
+module.exports = courseController;

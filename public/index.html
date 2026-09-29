@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge LMS - Dashboard Kursus</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 30px auto; padding: 20px; background: #f9f9f9; }
+        h1, h2 { color: #333; }
+        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input, textarea, select { width: 100%; padding: 8px; margin: 6px 0 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #45a049; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h1>SkillBridge LMS Dashboard</h1>
+
+    <!-- Form Tambah Kursus -->
+    <div class="card">
+        <h2>Tambah Kursus Baru</h2>
+        <form id="courseForm">
+            <label>Nama Kursus:</label>
+            <input type="text" id="course_name" required>
+
+            <label>Deskripsi:</label>
+            <textarea id="description" required></textarea>
+
+            <label>Harga (Rp):</label>
+            <input type="number" id="price" value="0" required>
+
+            <label>Kuota:</label>
+            <input type="number" id="quota" value="10" required>
+
+            <label>Category ID:</label>
+            <input type="number" id="category_id" value="1" required>
+
+            <label>Instructor ID:</label>
+            <input type="number" id="instructor_id" value="1" required>
+
+            <button type="submit">Simpan Kursus</button>
+        </form>
+    </div>
+
+    <!-- Tabel Daftar Kursus -->
+    <div class="card">
+        <h2>Daftar Kursus</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Kursus</th>
+                    <th>Deskripsi</th>
+                    <th>Harga</th>
+                    <th>Kuota</th>
+                </tr>
+            </thead>
+            <tbody id="courseTableBody">
+                <!-- Data akan dimuat secara otomatis lewat JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api/courses';
+
+        // Fungsi untuk mengambil dan menampilkan data kursus
+        async function loadCourses() {
+            try {
+                const response = await fetch(API_URL);
+                const result = await response.json();
+                const tbody = document.getElementById('courseTableBody');
+                tbody.innerHTML = '';
+
+                if (result.success && result.data) {
+                    result.data.forEach(course => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${course.id}</td>
+                            <td>${course.course_name}</td>
+                            <td>${course.description}</td>
+                            <td>Rp ${Number(course.price).toLocaleString('id-ID')}</td>
+                            <td>${course.quota}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (error) {
+                console.error('Gagal memuat data:', error);
+            }
+        }
+
+        // Fungsi untuk mengirim data baru saat form disubmit
+        document.getElementById('courseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const newCourse = {
+                course_name: document.getElementById('course_name').value,
+                description: document.getElementById('description').value,
+                price: Number(document.getElementById('price').value),
+                quota: Number(document.getElementById('quota').value),
+                category_id: Number(document.getElementById('category_id').value),
+                instructor_id: Number(document.getElementById('instructor_id').value)
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newCourse)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Kursus berhasil ditambahkan!');
+                    document.getElementById('courseForm').reset();
+                    loadCourses(); // Refresh tabel otomatis
+                } else {
+                    alert('Gagal: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan pada server.');
+            }
+        });
+
+        // Load data saat halaman pertama kali dibuka
+        loadCourses();
+    </script>
+</body>
+</html>
